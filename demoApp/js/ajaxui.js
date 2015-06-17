@@ -3,15 +3,6 @@
     var AjaxUI = function () {
 
         var settings = {
-            formClass: '.xhr-form',
-            enableNotifications: true
-        };
-
-        this.settings = function(settings){
-            settings.formClass = settings.formClass;
-        };
-
-        this.callbacks = function(callbacks){
 
         };
 
@@ -42,8 +33,6 @@
                 return false;
             });
         };
-
-        return this;
     };
 
     function processResponse(response) {
