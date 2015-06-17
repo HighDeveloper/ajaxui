@@ -1,23 +1,14 @@
-(function(){
+(function () {
 
-    var AjaxUI = function(){
+    var AjaxUI = function () {
 
-        return new AjaxuiJS(settings = {
+        var settings = {
 
-            formClass: '.xhr-form',
-            enableLoader: true,
-            enableNotifications: true,
-            enableUpdates: true,
-            enableActions: true
+        };
 
-        },notificationCallbacks = null, updateCallbacks = null,  actionCallbacks = null);
-    };
+        this.startService = function () {
 
-    var AjaxuiJS = function(settings, notificationCallbacks, updateCallbacks,  actionCallbacks){
-
-        function startService(){
-
-            return $(settings.formClass).on('submit', function (event) {
+            return $('.xhr-form').on('submit', function (event) {
 
                 $('body').loading({
                     overlay: $(".loading-overlay")
@@ -34,16 +25,14 @@
                     error: function (response) {
                         processResponse(response);
                     },
-                    complete: function(){
+                    complete: function () {
                         $('body').loading('stop');
                     }
                 });
 
                 return false;
             });
-        }
-
-        return this;
+        };
     };
 
     function processResponse(response) {
@@ -90,28 +79,28 @@
 
     function processUpdates(updates) {
 
-        $.each(updates, function(index, update){
+        $.each(updates, function (index, update) {
 
             var form_id = update.form_id;
             var fields = update.fields;
 
-            $.each(fields, function(field, value){
+            $.each(fields, function (field, value) {
 
-                if(form_id === 'none'){
-                    $('#'+field+'').val(value);
+                if (form_id === 'none') {
+                    $('#' + field + '').val(value);
                 }
-                else{
-                    $('#'+form_id +'').find('[name="'+ field +'"]').val(value);
+                else {
+                    $('#' + form_id + '').find('[name="' + field + '"]').val(value);
                 }
             });
         });
     }
 
-    function processActions(actions){
+    function processActions(actions) {
 
     }
 
-    if(window.AjaxUI){
+    if (!window.AjaxUI) {
         window.AjaxUI = AjaxUI;
     }
 

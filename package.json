@@ -1,0 +1,23 @@
+{
+  "name": "AjaxuiJS",
+  "version": "1.0.0",
+  "description": "",
+  "main": "ajaxui.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://csilvav@github.com/HighDeveloper/AjaxuiJS.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/HighDeveloper/AjaxuiJS/issues"
+  },
+  "homepage": "https://github.com/HighDeveloper/AjaxuiJS",
+  "dependencies": {
+    "express": "^4.12.4"
+  }
+}
