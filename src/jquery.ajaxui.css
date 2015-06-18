@@ -1,18 +1,26 @@
+/*
+* Custom styles for notification messages
+* used in jquery.growl plugin
+*/
 #growls {
-    z-index: 100000; }
-.growl.growl-default {
-    color: #FFF;
-    background: #0077E0 ; }
-.growl.growl-error {
-    color: #FFF;
-    background: #DE0000 ; }
-.growl.growl-notice {
-    color: #FFF;
-    background: #008700 ; }
-.growl.growl-warning {
-    color: #FFF;
-    background: #E65D00 ; }
+    z-index: 100000;
+}
 
+.growl.growl-default {
+    background: #0077E0;
+}
+
+.growl.growl-error {
+    background: #DE0000;
+}
+
+.growl.growl-notice {
+    background: #008700;
+}
+
+.growl.growl-warning {
+    background: #E65D00;
+}
 
 /*
  * Custom ajax loader animation
@@ -23,12 +31,14 @@
     display: none;
     z-index: 100000 !important;
 }
+
 .loader-wrap {
     position: absolute;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
 }
+
 .loader {
     margin: 6em auto;
     font-size: 10px;
@@ -44,12 +54,14 @@
     -webkit-animation: load8 1.1s infinite linear;
     animation: load8 1.1s infinite linear;
 }
+
 .loader,
 .loader:after {
     border-radius: 50%;
     width: 10em;
     height: 10em;
 }
+
 @-webkit-keyframes load8 {
     0% {
         -webkit-transform: rotate(0deg);
@@ -60,6 +72,7 @@
         transform: rotate(360deg);
     }
 }
+
 @keyframes load8 {
     0% {
         -webkit-transform: rotate(0deg);

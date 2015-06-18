@@ -1,10 +1,6 @@
 (function () {
-
-    var AjaxUI = function () {
-
-        var settings = {
-
-        };
+    "use strict";
+    var Ajaxui = function () {
 
         this.startService = function () {
 
@@ -100,8 +96,8 @@
 
     }
 
-    if (!window.AjaxUI) {
-        window.AjaxUI = AjaxUI;
+    if (!window.Ajaxui) {
+        window.Ajaxui = Ajaxui;
     }
 
 })();
