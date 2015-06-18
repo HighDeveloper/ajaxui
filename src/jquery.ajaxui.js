@@ -2,9 +2,33 @@
     "use strict";
     var Ajaxui = function () {
 
+        var settings = {
+            formClass: 'xhr-form',
+            loaderClass: 'single-circle-spin',
+            overlayLoadingColor: '#bfbdbb',
+            enableNotifications: true,
+            enableUpdates: true,
+            enableActions: true
+        };
+
+        var actionCallbacks = {};
+
+        this.settings = function(options){
+
+            settings.formClass = options.formClass ? options.formClass : settings.formClass;
+            settings.loaderClass = options.loaderClass ? options.loaderClass : settings.loaderClass;
+            settings.overlayLoadingColor = options.overlayLoadingColor ? options.overlayLoadingColor : settings.overlayLoadingColor;
+        };
+
+        this.actionCallbacks = function(callbacks){
+
+        };
+
         this.startService = function () {
 
-            return $('.xhr-form').on('submit', function (event) {
+            $('body').prepend('<div class="loading-overlay" style="background-color: '+settings.overlayLoadingColor+'"><div class="loader-wrap"><div class="loader-inner '+settings.loaderClass+'"></div></div></div>');
+
+            return $('.'+settings.formClass).on('submit', function (event) {
 
                 $('body').loading({
                     overlay: $(".loading-overlay")
@@ -61,6 +85,9 @@
             }
             else if (type === 'success') {
                 type = 'notice';
+            }
+            else if (type === 'danger') {
+                type = 'error';
             }
 
             $.growl({

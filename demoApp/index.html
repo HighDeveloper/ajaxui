@@ -3,10 +3,27 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title></title>
+    <link href="css/ajaxui.css" rel="stylesheet" type="text/css"/>
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js" type="text/javascript"></script>
     <script src="js/ajaxui.js" type="text/javascript"></script>
-    <script src="js/index.js" type="text/javascript"></script>
+    <script src="js/app.js" type="text/javascript"></script>
+    <style type="text/css">
+        .line-scale > div {
+            background-color: #DE0000;
+        }
+    </style>
 </head>
-<body>
+<body bgcolor="black">
 Testing Dev...
 </body>
+<script type="text/javascript">
+
+    var ajaxui = new Ajaxui();
+    ajaxui.settings({loaderClass: 'ball-grid-pulse', overlayLoadingColor: '#000'});
+    ajaxui.startService();
+
+    $('body').loading({
+        overlay: $(".loading-overlay")
+    });
+</script>
 </html>
