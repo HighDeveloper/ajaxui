@@ -1,127 +1,191 @@
 (function () {
+
     "use strict";
+
     var Ajaxui = function () {
 
-        var settings = {
-            formClass: 'xhr-form',
-            loaderClass: 'single-circle-spin',
-            overlayLoadingColor: '#bfbdbb',
-            enableNotifications: true,
-            enableUpdates: true,
-            enableActions: true
-        };
-
-        var actionCallbacks = {};
-
-        this.settings = function(options){
+        this.settings = function (options) {
 
             settings.formClass = options.formClass ? options.formClass : settings.formClass;
             settings.loaderClass = options.loaderClass ? options.loaderClass : settings.loaderClass;
+            settings.loaderColor = options.loaderColor ? options.loaderColor : settings.loaderColor;
             settings.overlayLoadingColor = options.overlayLoadingColor ? options.overlayLoadingColor : settings.overlayLoadingColor;
+            settings.notificationDuration = options.notificationDuration ? options.notificationDuration : settings.notificationDuration;
         };
 
-        this.actionCallbacks = function(callbacks){
+        this.callbacks = function (options) {
 
+            if(options.ajax){
+                callbacks.ajax.enabled = options.ajax.enabled;
+                callbacks.ajax.success = options.ajax.success;
+                callbacks.ajax.error = options.ajax.error;
+                callbacks.ajax.success = options.ajax.success;
+            }
+
+            if(options.actions){
+                callbacks.actions.enabled = options.actions.enabled;
+                callbacks.actions.functions = options.actions.functions;
+            }
         };
 
         this.startService = function () {
 
-            $('body').prepend('<div class="loading-overlay" style="background-color: '+settings.overlayLoadingColor+'"><div class="loader-wrap"><div class="loader-inner '+settings.loaderClass+'"></div></div></div>');
+            $('head').append('<style type="text/css">' +
+            '.loading-overlay{background: ' + settings.overlayLoadingColor + ';} ' +
+            '.' + settings.loaderClass + ' > div{background: ' + settings.loaderColor + ';}' +
+            '</style>');
 
-            return $('.'+settings.formClass).on('submit', function (event) {
+            $('body').prepend('<div class="loading-overlay"><div class="loader-wrap"><div class="loader-inner ' + settings.loaderClass + '"></div></div></div>');
 
-                $('body').loading({
-                    overlay: $(".loading-overlay")
-                });
+            var loadersCss = new LoadersCSS();
+            loadersCss.completeLoaderElements();
+
+            return $('.' + settings.formClass).on('submit', function (event) {
 
                 $.ajax({
                     url: $(this).attr('action'),
                     type: $(this).attr('method'),
                     data: $(this).serialize(),
 
-                    success: function (response) {
-                        processResponse(response);
+                    beforeSend: function (xhr, settings) {
+
+                        $('body').loading({
+                            overlay: $(".loading-overlay")
+                        });
                     },
-                    error: function (response) {
-                        processResponse(response);
+                    success: function (data, status, xhr) {
+
+                        var notifications = data.notifications;
+                        var updates = data.updates;
+                        var actions = data.actions;
+
+                        if (notifications !== undefined) {
+                            processNotifications(notifications);
+                        }
+                        if (updates !== undefined) {
+                            processUpdates(updates);
+                        }
+                        if (actions !== undefined) {
+                            processActions(actions);
+                        }
+
+                        if (callbacks.ajax.enabled && callbacks.ajax.success) {
+                            callbacks.ajax.success(data, status, xhr);
+                        }
                     },
-                    complete: function () {
+                    error: function (xhr, status, error) {
+
+                        var notifications = {
+                            type: 'danger',
+                            fixed: true,
+                            title: status,
+                            message: error
+                        };
+                        processNotifications(new Array(notifications));
+
+                        if (callbacks.ajax.enabled && callbacks.ajax.error) {
+                            callbacks.ajax.error(xhr, status, error);
+                        }
+                    },
+                    complete: function (xhr, status) {
+
                         $('body').loading('stop');
+
+                        if (callbacks.ajax.enabled && callbacks.ajax.complete) {
+                            callbacks.ajax.complete(xhr, status);
+                        }
                     }
                 });
 
                 return false;
             });
         };
+
+        var settings = {
+            formClass: 'xhr-form',
+            loaderClass: 'single-circle-spin',
+            loaderColor: '#ffffff',
+            overlayLoadingColor: 'rgba(191, 189, 187, 0.3)',
+            enableNotifications: true,
+            enableUpdates: true,
+            enableActions: true,
+            notificationDuration: 5000
+        };
+
+        var callbacks = {
+            ajax: {
+                enabled: false,
+                success: undefined,
+                error: undefined,
+                complete: undefined
+            },
+            actions: {
+                enabled: false,
+                functions: undefined
+            }
+        };
+
+        function processNotifications(notifications) {
+
+            $.each(notifications, function (index, notification) {
+
+                if (notification.type === 'info') {
+                    notification.type = 'default';
+                }
+                else if (notification.type === 'success') {
+                    notification.type = 'notice';
+                }
+                else if (notification.type === 'danger') {
+                    notification.type = 'error';
+                }
+
+                $.growl({
+                    style: notification.type,
+                    fixed: notification.fixed,
+                    title: notification.title,
+                    message: notification.message,
+                    duration: settings.notificationDuration
+                });
+            });
+        }
+
+        function processUpdates(updates) {
+
+            $.each(updates, function (index, update) {
+
+                var form_id = update.form_id;
+                var fields = update.fields;
+
+                $.each(fields, function (field, value) {
+
+                    if (form_id === 'none') {
+                        $('#' + field + '').val(value);
+                    }
+                    else {
+                        $('#' + form_id + '').find('[name="' + field + '"]').val(value);
+                    }
+                });
+            });
+        }
+
+        function processActions(actions) {
+
+            $.each(actions, function (index, action) {
+
+                if (callbacks.actions.enabled && callbacks.actions.functions) {
+
+                    var functions = callbacks.actions.functions;
+
+                    $.each(functions, function (name, callback) {
+
+                        if ($.inArray(name, actions.callbacks) !== -1) {
+                            callback();
+                        }
+                    });
+                }
+            });
+        }
     };
-
-    function processResponse(response) {
-
-        var notifications = response.notifications;
-        var updates = response.updates;
-        var actions = response.actions;
-
-        if (notifications !== undefined) {
-            processNotifications(notifications);
-        }
-        if (updates !== undefined) {
-            processUpdates(updates);
-        }
-        if (actions !== undefined) {
-            processActions(actions);
-        }
-    }
-
-    function processNotifications(notifications) {
-
-        var duration = 5000;
-
-        $.each(notifications, function (index, notification) {
-
-            var type = notification.type;
-
-            if (type === 'info') {
-                type = 'default';
-            }
-            else if (type === 'success') {
-                type = 'notice';
-            }
-            else if (type === 'danger') {
-                type = 'error';
-            }
-
-            $.growl({
-                style: type,
-                fixed: notification.fixed,
-                title: notification.title,
-                message: notification.message,
-                duration: duration
-            });
-        });
-    }
-
-    function processUpdates(updates) {
-
-        $.each(updates, function (index, update) {
-
-            var form_id = update.form_id;
-            var fields = update.fields;
-
-            $.each(fields, function (field, value) {
-
-                if (form_id === 'none') {
-                    $('#' + field + '').val(value);
-                }
-                else {
-                    $('#' + form_id + '').find('[name="' + field + '"]').val(value);
-                }
-            });
-        });
-    }
-
-    function processActions(actions) {
-
-    }
 
     if (!window.Ajaxui) {
         window.Ajaxui = Ajaxui;
