@@ -1,4 +1,4 @@
-/*$(document).ready(function(){
+$(document).ready(function(){
 
     var ajaxui = new Ajaxui();
     ajaxui.settings({
@@ -31,4 +31,4 @@
 
 function numFunc3(){
     alert("sample3");
-}*/
+}
