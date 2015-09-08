@@ -576,7 +576,37 @@ Copyright 2015 Kevin Sylvestre
 
     "use strict";
 
-    var Ajaxui = function () {
+    var Ajaxui = function (options) {
+
+        var settings = {
+            formClass: 'ajaxui-form',
+            loaderClass: 'single-circle-spin',
+            loaderColor: '#ffffff',
+            overlayLoadingColor: 'rgba(191, 189, 187, 0.3)',
+            enableNotifications: true,
+            enableUpdates: true,
+            enableActions: true,
+            notificationDuration: 5000
+        };
+
+        var callbacks = {
+            ajax: {
+                success: undefined,
+                error: undefined,
+                complete: undefined
+            },
+            actions: undefined
+        };
+
+        if(options){
+            if(options.settings){
+                this.settings(options.settings);
+            }
+
+            if(options.callbacks){
+                this.callbacks(options.callbacks);
+            }
+        }
 
         this.settings = function (options) {
 
@@ -590,15 +620,13 @@ Copyright 2015 Kevin Sylvestre
         this.callbacks = function (options) {
 
             if(options.ajax){
-                callbacks.ajax.enabled = options.ajax.enabled;
                 callbacks.ajax.success = options.ajax.success;
                 callbacks.ajax.error = options.ajax.error;
-                callbacks.ajax.success = options.ajax.success;
+                callbacks.ajax.complete = options.ajax.complete;
             }
 
             if(options.actions){
-                callbacks.actions.enabled = options.actions.enabled;
-                callbacks.actions.functions = options.actions.functions;
+                callbacks.actions = options.actions;
             }
         };
 
@@ -614,7 +642,7 @@ Copyright 2015 Kevin Sylvestre
             var loadersCss = new LoadersCSS();
             loadersCss.completeLoaderElements();
 
-            return $('.' + settings.formClass).on('submit', function (event) {
+            $('.' + settings.formClass).on('submit', function (event) {
 
                 $.ajax({
                     url: $(this).attr('action'),
@@ -643,7 +671,7 @@ Copyright 2015 Kevin Sylvestre
                             processActions(actions);
                         }
 
-                        if (callbacks.ajax.enabled && callbacks.ajax.success) {
+                        if (typeof callbacks.ajax.success === 'function') {
                             callbacks.ajax.success(data, status, xhr);
                         }
                     },
@@ -657,46 +685,22 @@ Copyright 2015 Kevin Sylvestre
                         };
                         processNotifications(new Array(notifications));
 
-                        if (callbacks.ajax.enabled && callbacks.ajax.error) {
+                        if (typeof callbacks.ajax.error === 'function') {
                             callbacks.ajax.error(xhr, status, error);
                         }
                     },
                     complete: function (xhr, status) {
 
-                        $('body').loading('stop');
-
-                        if (callbacks.ajax.enabled && callbacks.ajax.complete) {
+                        if (typeof callbacks.ajax.complete === 'function') {
                             callbacks.ajax.complete(xhr, status);
                         }
+
+                        $('body').loading('stop');
                     }
                 });
 
                 return false;
             });
-        };
-
-        var settings = {
-            formClass: 'xhr-form',
-            loaderClass: 'single-circle-spin',
-            loaderColor: '#ffffff',
-            overlayLoadingColor: 'rgba(191, 189, 187, 0.3)',
-            enableNotifications: true,
-            enableUpdates: true,
-            enableActions: true,
-            notificationDuration: 5000
-        };
-
-        var callbacks = {
-            ajax: {
-                enabled: false,
-                success: undefined,
-                error: undefined,
-                complete: undefined
-            },
-            actions: {
-                enabled: false,
-                functions: undefined
-            }
         };
 
         function processNotifications(notifications) {
@@ -744,18 +748,15 @@ Copyright 2015 Kevin Sylvestre
 
         function processActions(actions) {
 
-            $.each(actions, function (index, action) {
+            $.each(actions, function (index, name) {
 
-                if (callbacks.actions.enabled && callbacks.actions.functions) {
+                if (callbacks.actions) {
 
-                    var functions = callbacks.actions.functions;
+                    var action = callbacks.actions[name];
 
-                    $.each(functions, function (name, callback) {
-
-                        if ($.inArray(name, actions.callbacks) !== -1) {
-                            callback();
-                        }
-                    });
+                    if(typeof action === 'function'){
+                        action();
+                    }
                 }
             });
         }
