@@ -6,22 +6,21 @@ $(document).ready(function(){
     });
     ajaxui.callbacks({
         ajax: {
-            enabled: true,
             success: function(data){
                 alert(data);
+            },
+            complete: function(xhr, status){
+                alert(status);
             }
         },
         actions: {
-            enabled: true,
-            functions: {
-                'nameFunc1': function(){
-                    console.log("sample1");
-                },
-                'nameFunc2': function(){
-                    console.log('sample2')
-                },
-                'nameFunc3': numFunc3
-            }
+            nameFunc1: function(){
+                console.log("sample1");
+            },
+            nameFunc2: function(){
+                console.log('sample2')
+            },
+            nameFunc3: numFunc3
         }
     });
     ajaxui.startService();
