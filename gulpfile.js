@@ -9,7 +9,7 @@ gulp.task('concat-minify-css', function() {
 
     gulp.src(config.cssSourceFiles())
         .pipe(concat(config.cssLibFile))
-        .pipe(gulp.dest(config.cssDemoAppFolder()))
+        .pipe(gulp.dest(config.cssDemoFolder()))
         .pipe(gulp.dest(config.distributionFolder))
         .pipe(minifyCss())
         .pipe(rename({suffix: config.fileSuffix}))
@@ -20,7 +20,7 @@ gulp.task('concat-minify-js', function() {
 
     gulp.src(config.jsSourceFiles())
         .pipe(concat(config.jsLibFile))
-        .pipe(gulp.dest(config.jsDemoAppFolder()))
+        .pipe(gulp.dest(config.jsDemoFolder()))
         .pipe(gulp.dest(config.distributionFolder))
         .pipe(uglify())
         .pipe(rename({suffix: config.fileSuffix}))

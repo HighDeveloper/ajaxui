@@ -2,12 +2,12 @@ var config = {
     sourceFolder: './src',
     distributionFolder: './dist',
     fileSuffix: '.min',
-    demoAppFolder: './demoApp',
-    cssDemoAppFolder: function(){
-        return this.demoAppFolder + '/css'
+    demoFolder: './demo',
+    cssDemoFolder: function(){
+        return this.demoFolder + '/css'
     },
-    jsDemoAppFolder: function(){
-        return this.demoAppFolder + '/js'
+    jsDemoFolder: function(){
+        return this.demoFolder + '/js'
     },
     cssSourceFiles: function(){
         return [this.sourceFolder + '/jquery.growl.css', this.sourceFolder + '/jquery.loading.css', this.sourceFolder + '/loaders.css', this.sourceFolder + '/jquery.ajaxui.css'];
